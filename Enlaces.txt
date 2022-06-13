@@ -1,0 +1,25 @@
+Machine learning -> https://www.cienciadedatos.net/documentos/py06_machine_learning_python_scikitlearn.html
+		    https://dl.matlabyar.com/siavash/ML/Book/Ethem%20Alpaydin-Introduction%20to%20Machine%20Learning-The%20MIT%20Press%20(2014).pdf
+		    https://datascientest.com/es/machine-learning-definicion-funcionamiento-usos
+		    https://www.nrigroupindia.com/e-book/Introduction%20to%20Machine%20Learning%20with%20Python%20(%20PDFDrive.com%20)-min.pdf
+		    https://library.kre.dp.ua/Books/2-4%20kurs/%D0%9F%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F%20%2B%20%D0%BC%D0%BE%D0%B2%D0%B8%20%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D1%83%D0%B2%D0%B0%D0%BD%D0%BD%D1%8F/Python/practical-machine-learning-python-problem-solvers.pdf
+Visualización en pandas -> https://pandas.pydata.org/pandas-docs/stable/user_guide/visualization.html
+Ver importancia características -> https://ichi.pro/es/3-formas-esenciales-de-calcular-la-importancia-de-las-caracteristicas-en-python-52301047341397
+Random forest -> https://www.cienciadedatos.net/documentos/py08_random_forest_python.html
+Isolation Forest -> https://www.cienciadedatos.net/documentos/py22-deteccion-anomalias-isolation-forest-python.html
+		    https://blog.paperspace.com/anomaly-detection-isolation-forest/
+		    https://dl.acm.org/doi/pdf/10.1145/3338840.3355641
+		    https://towardsdatascience.com/outlier-detection-with-isolation-forest-3d190448d45e
+Modelado -> https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html
+	    https://machinelearningmastery.com/nested-cross-validation-for-machine-learning-with-python/
+	    https://www.analyticslane.com/2018/07/02/gridsearchcv/
+Dibujos -> https://claudiovz.github.io/scipy-lecture-notes-ES/intro/matplotlib/matplotlib.html
+Regresión Logística -> https://towardsdatascience.com/logistic-regression-detailed-overview-46c4da4303bc
+		       https://www.techtarget.com/searchbusinessanalytics/definition/logistic-regression
+		       https://web.stanford.edu/~jurafsky/slp3/5.pdf
+Random Forest ->
+SVM -> https://ieeexplore.ieee.org/abstract/document/4460898?casa_token=zAv_5bsCWOEAAAAA:OtkcYOnKUbWlxnp15loI3ZjMytxIYa666ogg95dGPaqRsj1LDhTY1dmww1FMvKddr4HHt3BhKw
+Matriz de confusión ->
+Python -> https://www.jmlr.org/papers/volume12/pedregosa11a/pedregosa11a.pdf?ref=https://githubhelp.com
+
+
