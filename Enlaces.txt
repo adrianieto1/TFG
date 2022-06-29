@@ -21,5 +21,8 @@ Random Forest ->
 SVM -> https://ieeexplore.ieee.org/abstract/document/4460898?casa_token=zAv_5bsCWOEAAAAA:OtkcYOnKUbWlxnp15loI3ZjMytxIYa666ogg95dGPaqRsj1LDhTY1dmww1FMvKddr4HHt3BhKw
 Matriz de confusión ->
 Python -> https://www.jmlr.org/papers/volume12/pedregosa11a/pedregosa11a.pdf?ref=https://githubhelp.com
+Como hacer con ryu -> https://www.youtube.com/watch?v=qyX_RGQsw6E&t=1s
+		      https://www.youtube.com/watch?v=lL8WIakAfpY
+
 
 

@@ -27,7 +27,7 @@
 import pandas as pd
 pd.options.display.max_rows = None
 pd.options.display.max_columns = None
-#from sklearn import patch_sklearn
+#from sklearnex import patch_sklearn
 #patch_sklearn()
 
 
@@ -276,85 +276,85 @@ plt.title('Nº paquetes por protocolo tráfico de ataque')
 # In[22]:
 
 
-# fig = plt.figure(figsize=(14,14))
-# plt.subplot2grid((3,2),(0,0))
-# datos[datos['Tipo']==0]['Dst Port'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Dst Port'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,100000)
-# plt.title('Puerto de destino')
-# plt.subplot2grid((3,2),(0,1))
-# datos[datos['Tipo']==0]['Src Port'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Src Port'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,100000)
-# plt.title('Puerto origen')
-# plt.subplot2grid((3,2),(1,0))
-# datos[datos['Tipo']==0]['Fwd Pkt Len Mean'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Fwd Pkt Len Mean'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,300)
-# plt.title('Media tamaño paquetes Fwd')
-# plt.subplot2grid((3,2),(1,1))
-# datos[datos['Tipo']==0]['Bwd Pkt Len Mean'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Bwd Pkt Len Mean'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,500)
-# plt.title('Media tamaño paquetes Bwd')
-# plt.subplot2grid((3,2),(2,0))
-# datos[datos['Tipo']==0]['Flow Pkts/s'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Flow Pkts/s'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,250000)
-# plt.title('Paquetes por segundo do flow')
-# plt.subplot2grid((3,2),(2,1))
-# datos[datos['Tipo']==0]['Flow Byts/s'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Flow Byts/s'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,100000)
-# plt.title('Bytes por segundo do flow')
+fig = plt.figure(figsize=(14,14))
+plt.subplot2grid((3,2),(0,0))
+datos[datos['Tipo']==0]['Dst Port'].plot(kind='kde')
+datos[datos['Tipo']==1]['Dst Port'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,100000)
+plt.title('Puerto de destino')
+plt.subplot2grid((3,2),(0,1))
+datos[datos['Tipo']==0]['Src Port'].plot(kind='kde')
+datos[datos['Tipo']==1]['Src Port'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,100000)
+plt.title('Puerto origen')
+plt.subplot2grid((3,2),(1,0))
+datos[datos['Tipo']==0]['Fwd Pkt Len Mean'].plot(kind='kde')
+datos[datos['Tipo']==1]['Fwd Pkt Len Mean'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,300)
+plt.title('Media tamaño paquetes Fwd')
+plt.subplot2grid((3,2),(1,1))
+datos[datos['Tipo']==0]['Bwd Pkt Len Mean'].plot(kind='kde')
+datos[datos['Tipo']==1]['Bwd Pkt Len Mean'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,500)
+plt.title('Media tamaño paquetes Bwd')
+plt.subplot2grid((3,2),(2,0))
+datos[datos['Tipo']==0]['Flow Pkts/s'].plot(kind='kde')
+datos[datos['Tipo']==1]['Flow Pkts/s'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,250000)
+plt.title('Paquetes por segundo do flow')
+plt.subplot2grid((3,2),(2,1))
+datos[datos['Tipo']==0]['Flow Byts/s'].plot(kind='kde')
+datos[datos['Tipo']==1]['Flow Byts/s'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,100000)
+plt.title('Bytes por segundo do flow')
 
 
 # In[23]:
 
 
-# fig = plt.figure(figsize=(14,14))
-# plt.subplot2grid((3,2),(0,0))
-# datos[datos['Tipo']==0]['Flow IAT Mean'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Flow IAT Mean'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,900000)
-# plt.title('Media tempo entre dous paquetes')
-# plt.subplot2grid((3,2),(0,1))
-# datos[datos['Tipo']==0]['Fwd IAT Mean'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Fwd IAT Mean'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,600000)
-# plt.title('Media tempo entre dous paquetes Fwd')
-# plt.subplot2grid((3,2),(1,0))
-# datos[datos['Tipo']==0]['Bwd IAT Mean'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Bwd IAT Mean'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,900000)
-# plt.title('Media tempo entre dous paquetes Bwd')
-# plt.subplot2grid((3,2),(1,1))
-# datos[datos['Tipo']==0]['Pkt Len Mean'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Pkt Len Mean'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,400)
-# plt.title('Media do tamaño dos paquetes')
-# plt.subplot2grid((3,2),(2,0))
-# datos[datos['Tipo']==0]['Down/Up Ratio'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Down/Up Ratio'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,4)
-# plt.title('Ratio subida e descarga')
-# plt.subplot2grid((3,2),(2,1))
-# datos[datos['Tipo']==0]['Pkt Size Avg'].plot(kind='kde')
-# datos[datos['Tipo']==1]['Pkt Size Avg'].plot(kind='kde')
-# plt.legend(('Normal','Ataque'))
-# plt.xlim(0,400)
-# plt.title('Tamaño medio dos paquetes')
+fig = plt.figure(figsize=(14,14))
+plt.subplot2grid((3,2),(0,0))
+datos[datos['Tipo']==0]['Flow IAT Mean'].plot(kind='kde')
+datos[datos['Tipo']==1]['Flow IAT Mean'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,900000)
+plt.title('Media tempo entre dous paquetes')
+plt.subplot2grid((3,2),(0,1))
+datos[datos['Tipo']==0]['Fwd IAT Mean'].plot(kind='kde')
+datos[datos['Tipo']==1]['Fwd IAT Mean'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,600000)
+plt.title('Media tempo entre dous paquetes Fwd')
+plt.subplot2grid((3,2),(1,0))
+datos[datos['Tipo']==0]['Bwd IAT Mean'].plot(kind='kde')
+datos[datos['Tipo']==1]['Bwd IAT Mean'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,900000)
+plt.title('Media tempo entre dous paquetes Bwd')
+plt.subplot2grid((3,2),(1,1))
+datos[datos['Tipo']==0]['Pkt Len Mean'].plot(kind='kde')
+datos[datos['Tipo']==1]['Pkt Len Mean'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,400)
+plt.title('Media do tamaño dos paquetes')
+plt.subplot2grid((3,2),(2,0))
+datos[datos['Tipo']==0]['Down/Up Ratio'].plot(kind='kde')
+datos[datos['Tipo']==1]['Down/Up Ratio'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,4)
+plt.title('Ratio subida e descarga')
+plt.subplot2grid((3,2),(2,1))
+datos[datos['Tipo']==0]['Pkt Size Avg'].plot(kind='kde')
+datos[datos['Tipo']==1]['Pkt Size Avg'].plot(kind='kde')
+plt.legend(('Normal','Ataque'))
+plt.xlim(0,400)
+plt.title('Tamaño medio dos paquetes')
 
 
 # ### Creación de novas variables y OneHot Encoding
@@ -650,7 +650,7 @@ from sklearn.model_selection import StratifiedKFold
 rng = np.random.RandomState(10)
 Xrfecv = datos.drop(['Tipo','anomalias','scores'], axis=1)
 yrfecv = datos['Tipo']
-rfecv = RFECV(estimator=DecisionTreeClassifier(max_depth=None,random_state=rng), step=1, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=rng), scoring='accuracy')
+rfecv = RFECV(estimator=DecisionTreeClassifier(max_depth=None,random_state=rng), step=1, cv=StratifiedKFold(n_splits=5,shuffle=True,random_state=rng), scoring='accuracy', n_jobs=-1)
 rfecv.fit(Xrfecv,yrfecv)
 
 
@@ -702,7 +702,7 @@ X.head(5)
 # In[48]:
 
 
-X = datos
+X = datos.sample(100)
 Xprueba = X.drop(['Tipo','anomalias','scores'], axis=1)
 yprueba = X['Tipo']
 
@@ -717,6 +717,7 @@ from sklearn.model_selection import cross_val_score
 from sklearn.metrics import accuracy_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.svm import LinearSVC
+from sklearn.metrics import confusion_matrix
 from numpy import mean
 from numpy import std
 cv_externo = StratifiedKFold(n_splits=5, shuffle=True, random_state=rng)
@@ -747,8 +748,17 @@ for name, model, param in models:
          cvresultssvm.append(pd.DataFrame(result.cv_results_)) 
    #scores = cross_val_score(busqueda,Xprueba,yprueba,scoring='accuracy',cv=cv_externo,n_jobs=-1)
    best_model = result.best_estimator_
-   yhat = best_model.predict(x_test)
-   acc = accuracy_score(y_test, yhat)
+   y_pred = best_model.predict(x_test)
+   # cm = confusion_matrix(y_test,y_pred)
+   # fig, ax = plt.subplots(figsize=(10,5))
+   # ax.matshow(cm)
+   # plt.title('Matriz de Confusión', fontsize=20)
+   # plt.ylabel('Etiqueta Verdadera', fontsize=15)
+   # plt.xlabel('Etiqueta Predicha', fontsize=15)
+   # for (i, j), z in np.ndenumerate(cm):
+   #    ax.text(j, i, '{:d}'.format(z), ha='center', va='center')
+   # plt.show()
+   acc = accuracy_score(y_test, y_pred)
    outer_results.append(acc)
    #results.append(outer_results)
    names.append(name)
@@ -792,12 +802,11 @@ print(tuplaslr)
 print(paramlr)
 
 
-# In[56]:
+# In[51]:
 
 
 import pickle
 from sklearn import model_selection
-from sklearn.metrics import confusion_matrix
 X_train, X_test, Y_train, Y_test = model_selection.train_test_split(Xprueba, yprueba, test_size=0.3, random_state=rng)
 parametroslr= paramlr[tuplaslr[0][0]][1]
 penaltyl = parametroslr['penalty']
@@ -819,7 +828,7 @@ for (i, j), z in np.ndenumerate(cm):
 plt.show()
 
 
-# In[59]:
+# In[52]:
 
 
 mediarf = []
@@ -854,7 +863,7 @@ print(tuplasrf)
 print(paramrf)
 
 
-# In[60]:
+# In[53]:
 
 
 parametrosrf= paramrf[tuplasrf[0][0]][1]
@@ -877,7 +886,7 @@ for (i, j), z in np.ndenumerate(cm):
 plt.show()
 
 
-# In[61]:
+# In[54]:
 
 
 mediasvm = []
@@ -912,7 +921,7 @@ print(tuplassvm)
 print(paramsvm)
 
 
-# In[62]:
+# In[55]:
 
 
 parametrossvm= paramsvm[tuplassvm[0][0]][1]
