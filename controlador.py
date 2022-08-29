@@ -1,18 +1,23 @@
-from ryu.app import simple_switch_13
-from ryu.ofproto import ofproto_v1_6
+from simple_switch_mod import *
 from ryu.controller import ofp_event
-from ry.controller.handler import set_ev_cls
+from ryu.controller.handler import set_ev_cls
 from ryu.controller.handler import MAIN_DISPATCHER, DEAD_DISPATCHER
 from operator import attrgetter
 from datetime import datetime
 from ryu.lib import hub
+from ryu.app import simple_switch_13
+from ryu.lib.packet import packet, ipv4, tcp, udp, in_proto
+#from ryu.ofproto import ofproto_v1_3
 
-class AppSwitch(simple_switch_13.SimpleSwitch13):
-    OFP_VERSIONS = [ofproto_v1_6.OFP_VERSION]
+class SimpleMonitor13(SimpleSwitch13):
+#class SimpleMonitor13(simple_switch_13.SimpleSwitch13):
+    #OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
 
     def __init__(self, *args, **kwargs) :
-        super(AppSwitch, self).__init__(*args, **kwargs)
+        super(SimpleMonitor13, self).__init__(*args, **kwargs)
         self.datapaths = {}
+        self.monitor_thread = hub.spawn(self._monitor)
+        self.fields = {'time':'','datapath':'','tcp_src':'','tcp_dst':'','udp_src':'','udp_dst':'','ipv4_src':'','ipv4_dst':'','ip_proto':''}
 
     @set_ev_cls(ofp_event.EventOFPStateChange, [MAIN_DISPATCHER, DEAD_DISPATCHER])
     def flow_handler(self, ev):
@@ -27,7 +32,7 @@ class AppSwitch(simple_switch_13.SimpleSwitch13):
                 del self.datapaths[datapath.id]
 
     def _monitor(self):
-        self.logger.info('time\tdatapath\tin-port\teth-src\teth-dst\tout-port\ttotal_packets\ttotal_bytes')
+        self.logger.info('time\tdatapath\ttcp_src\ttcp_dst\tudp_src\tudp_dst\tipv4_src\tipv4_dst\tip_proto')
         while True:
             for dp in self.datapaths.values():
                 self._request_stats(dp)
@@ -47,18 +52,19 @@ class AppSwitch(simple_switch_13.SimpleSwitch13):
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
         body = ev.msg.body
-
+        #self.logger.info(body)
         for stat in sorted([flow for flow in body if flow.priority == 1],
                            key=lambda flow: (flow.match['in_port'],
                                              flow.match['eth_dst'])):
+            self.logger.info('VIVA ESPANAAAAAA')
             #print details of flows
             self.fields['time'] = datetime.utcnow().strftime('%s')
             self.fields['datapath'] = ev.msg.datapath.id
-            self.fields['in-port'] = stat.match['in_port']
-            self.fields['eth_src'] = stat.match['eth_src']
-            self.fields['eth_dst'] = stat.match['eth_dst']
-            self.fields['out-port'] = stat.instructions[0].actions[0].port
-            self.fields['total_packets'] = stat.packet_count
-            self.fields['total_bytes'] = stat.byte_count
-
-            self.logger.info('data\t%s\t%x\t%x\t%s\t%s\t%x\t%d\t%d',self.fields['time'],self.fields['datapath'],self.fields['in-port'],self.fields['eth_src'],self.fields['eth_dst'],self.fields['out-port'],self.fields['total_packets'],self.fields['total_bytes'])
+            self.fields['tcp_src'] = stat.match['tcp_src']
+            self.fields['tcp_dst'] = stat.match['tcp_dst']
+            self.fields['udp_src'] = stat.match['udp_src']
+            self.fields['udp_dst'] = stat.match['udp_dst']
+            self.fields['ipv4_src'] = stat.match['ipv4_src']
+            self.fields['ipv4_dst'] = stat.match['ipv4_dst']
+            self.fields['ip_proto'] = stat.match['ip_proto']
+            self.logger.info('data\t%s\t%x\t%x\t%s\t%s\t%x\t%d',self.fields['time'],self.fields['datapath'],self.fields['tcp_src'],self.fields['tcp_dst'],self.fields['udp_src'],self.fields['udp_dst'],self.fields['ipv4_src'],self.fields['ipv4_dst'],self.fields['ip_proto'])
