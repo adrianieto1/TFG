@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from re import A
 import sys, subprocess
 import joblib
 from prettytable import PrettyTable 
@@ -116,33 +117,44 @@ def run_ryu(p,modelo):
         if out == '' and p.poll() != None:
             break
         if out != '' and out.startswith(b'data'): #when Ryu 'simple_monitor_AK.py' script returns output
-            print('KHEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+            unique_id = '0'
+            reverse_id = '0'
             fields = out.split(b'\t')[1:] #split the flow details
             
             fields = [f.decode(encoding='utf-8', errors='strict') for f in fields] #decode flow details 
             
             if fields[8] == '6':
-                unique_id = '-'.join([fields[7],fields[6],fields[3],fields[2],fields[8]]) #create unique ID for flow based on switch ID, source host,and destination host
+                unique_id = '-'.join([fields[7],fields[6],fields[3],fields[2],fields[8]])  #create unique ID for flow based on switch ID, source host,and destination host
+                reverse_id = '-'.join([fields[6],fields[7],fields[2],fields[3],fields[8]])
                 print(unique_id)
+                print(reverse_id)
             if fields[8] == '17':
                 unique_id = '-'.join([fields[7],fields[6],fields[5],fields[4],fields[8]]) #create unique ID for flow based on switch ID, source host,and destination host
+                reverse_id = '-'.join([fields[6],fields[7],fields[4],fields[5],fields[8]])
                 print(unique_id)
+                print(reverse_id)
             if fields[8] == '0':
-                unique_id = '-'.join([fields[7],fields[6],fields[5],'0-0',fields[8]]) #create unique ID for flow based on switch ID, source host,and destination host
+                unique_id = '-'.join([fields[7],fields[6],'0-0',fields[8]]) #create unique ID for flow based on switch ID, source host,and destination host
+                reverse_id = '-'.join([fields[6],fields[7],'0-0',fields[8]])
                 print(unique_id)
-            if unique_id in datos['Flow ID']:
-                if rep[unique_id] >= 1:
-                    fila = datos['Flow ID']==unique_id
-                    fila = fila.iloc[rep[unique_id]]
-                    flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
-                    rep[unique_id] = rep[unique_id] + 1
-                else:
+                print(reverse_id)
+            if (datos.isin([unique_id]).any().any()) or (datos.isin([reverse_id]).any().any()):
+                if unique_id not in rep:
                     rep[unique_id] = 1
-                    fila = datos['Flow ID']==unique_id
+                    filauni = datos.loc[datos['Flow ID']==unique_id]
+                    filarev = datos.loc[datos['Flow ID']==reverse_id]
+                    fila = pd.concat([filauni,filarev])
                     fila = fila.iloc[0]
-                    flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
-            else:
-                flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
+                    flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down/Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
+                elif rep[unique_id] >= 1:
+                    filauni = datos.loc[datos['Flow ID']==unique_id]
+                    filarev = datos.loc[datos['Flow ID']==reverse_id]
+                    fila = pd.concat([filauni,filarev])
+                    fila = fila.iloc[rep[unique_id]]
+                    flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down/Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
+                    rep[unique_id] = rep[unique_id] + 1
+            #else:
+                #flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
             #if unique_id in flows.keys():
                 #flows[unique_id].updateforward(int(fields[6]),int(fields[7]),int(fields[0])) #update forward attributes with time, packet, and byte count
             #else:
@@ -151,9 +163,9 @@ def run_ryu(p,modelo):
                     #flows[rev_unique_id].updatereverse(int(fields[6]),int(fields[7]),int(fields[0])) #update reverse attributes with time, packet, and byte count
                 #else:
                     #flows[unique_id] = Flow(int(fields[0]), fields[1], fields[2], fields[3], fields[4], fields[5], int(fields[6]), int(fields[7])) #create new flow object
-            if time%10==0:
-                printclassifier(modelo)
-        time += 1
+            #if time%10==0:
+            printclassifier(modelo)
+        #time += 1
 
 if __name__ == '__main__':
     SUBCOMMANDS = ('svm', 'rf', 'lr')

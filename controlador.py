@@ -52,19 +52,30 @@ class SimpleMonitor13(SimpleSwitch13):
     @set_ev_cls(ofp_event.EventOFPFlowStatsReply, MAIN_DISPATCHER)
     def _flow_stats_reply_handler(self, ev):
         body = ev.msg.body
-        #self.logger.info(body)
+        #self.logger.info('FlowStatsReply controlador')
         for stat in sorted([flow for flow in body if flow.priority == 1],
                            key=lambda flow: (flow.match['in_port'],
                                              flow.match['eth_dst'])):
-            self.logger.info('VIVA ESPANAAAAAA')
+            #self.logger.info(stat.match['ip_proto'])
             #print details of flows
             self.fields['time'] = datetime.utcnow().strftime('%s')
             self.fields['datapath'] = ev.msg.datapath.id
-            self.fields['tcp_src'] = stat.match['tcp_src']
-            self.fields['tcp_dst'] = stat.match['tcp_dst']
-            self.fields['udp_src'] = stat.match['udp_src']
-            self.fields['udp_dst'] = stat.match['udp_dst']
+            if(stat.match['ip_proto'] == 6):
+                self.fields['udp_src'] = 0
+                self.fields['udp_dst'] = 0
+                self.fields['tcp_src'] = stat.match['tcp_src']
+                self.fields['tcp_dst'] = stat.match['tcp_dst']
+            elif(stat.match['ip_proto'] == 17):
+                self.fields['tcp_src'] = 0
+                self.fields['tcp_dst'] = 0
+                self.fields['udp_src'] = stat.match['udp_src']
+                self.fields['udp_dst'] = stat.match['udp_dst']
+            else:
+                self.fields['tcp_src'] = 0
+                self.fields['tcp_dst'] = 0
+                self.fields['udp_src'] = 0
+                self.fields['udp_dst'] = 0
             self.fields['ipv4_src'] = stat.match['ipv4_src']
             self.fields['ipv4_dst'] = stat.match['ipv4_dst']
             self.fields['ip_proto'] = stat.match['ip_proto']
-            self.logger.info('data\t%s\t%x\t%x\t%s\t%s\t%x\t%d',self.fields['time'],self.fields['datapath'],self.fields['tcp_src'],self.fields['tcp_dst'],self.fields['udp_src'],self.fields['udp_dst'],self.fields['ipv4_src'],self.fields['ipv4_dst'],self.fields['ip_proto'])
+            self.logger.info('data\t%s\t%x\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t',self.fields['time'],self.fields['datapath'],self.fields['tcp_src'],self.fields['tcp_dst'],self.fields['udp_src'],self.fields['udp_dst'],self.fields['ipv4_src'],self.fields['ipv4_dst'],self.fields['ip_proto'])
