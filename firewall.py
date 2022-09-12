@@ -116,7 +116,7 @@ class SimpleSwitch13(app_manager.RyuApp):
         datapath.send_msg(mod)
 
 
-    def mod_flow(self, datapath, priority, match, actions):
+    def mod_flow(self, datapath, priority, match):
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
         actions = []
@@ -145,10 +145,13 @@ class SimpleSwitch13(app_manager.RyuApp):
             else:
                 unique_id = '-'.join([ipv4_dst,ipv4_src,'0-0',str(ip_proto)]) #create unique ID for flow based on switch ID, source host,and destination host
                 reverse_id = '-'.join([ipv4_src,ipv4_dst,'0-0',str(ip_proto)])
-            
+
+            #print(unique_id)
+            #print(reverse_id)
             if unique_id != self.previo_id:
                 self.previo_id = unique_id
                 if (self.datos.isin([unique_id]).any().any()) or (self.datos.isin([reverse_id]).any().any()):
+                    print('papas')
                     if unique_id not in self.rep:
                         self.rep[unique_id] = 1
                         filauni = self.datos.loc[self.datos['Flow ID']==unique_id]
@@ -163,7 +166,10 @@ class SimpleSwitch13(app_manager.RyuApp):
                         fila = fila.iloc[self.rep[unique_id]]
                         self.flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down/Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
                         self.rep[unique_id] = self.rep[unique_id] + 1
-                    modelo = joblib.load('modelolr.joblib')
+                    modelo = joblib.load('modelorf.joblib')
+                    x = PrettyTable()
+                    x.field_names = ["Flow ID", "IP Origen", "IP Destino", "Puerto Origen","Puerto Destino","Tipo"]
+
                     for key,flow in self.flows.items():
                         features = np.asarray([flow.TotLen_Bwd_Pkts,flow.Fwd_Pkt_Len_Max,flow.Fwd_Pkt_Len_Min,flow.Fwd_Pkt_Len_Std,flow.Bwd_Pkt_Len_Min,flow.Bwd_Pkt_Len_Std,flow.Flow_Byts_s,flow.Flow_Pkts_s,flow.Flow_IAT_Mean,flow.Flow_IAT_Min,flow.Fwd_IAT_Std,flow.Bwd_IAT_Tot,flow.Bwd_IAT_Std,flow.Bwd_IAT_Max,flow.Bwd_Header_Len,flow.Pkt_Len_Max,flow.Pkt_Len_Mean,flow.Pkt_Len_Std,flow.Pkt_Len_Var,flow.Down_Up_Ratio,flow.Fwd_Seg_Size_Avg,flow.Bwd_Seg_Size_Avg,flow.Init_Bwd_Win_Byts,flow.Active_Min,flow.Idle_Std,flow.Puerto_Origen,flow.Puerto_Destino,flow.IP_Origen,flow.IP_Destino,flow.Seno_Hora,flow.Coseno_Hora]).reshape(1,-1) #convert to array so the model can understand the features properly
         
@@ -171,12 +177,25 @@ class SimpleSwitch13(app_manager.RyuApp):
         
                         #if the model is unsupervised, the label is a cluster number. Refer to Jupyter notebook to see how cluster numbers map to labels
                         if label == 0: 
-                            return(0)
+                            label = ['Normal']
                         elif label == 1: 
                             label = ['Ataque']
+
+                        if ip_proto == 17:
+                                src_port = udp_src
+                                dst_port = udp_dst
+                        else:
+                            src_port = tcp_src
+                            dst_port = tcp_dst
+                        x.add_row([key,ipv4_src,ipv4_dst,src_port,dst_port,label[0]]) 
+                        print(x)#print output in pretty mode (i.e. formatted table) 
+                        #if the model is unsupervised, the label is a cluster number. Refer to Jupyter notebook to see how cluster numbers map to labels
+                        if label == ['Normal']: 
+                            return(0)
+                        elif label == ['Ataque']: 
                             return(1)
-                else:
-                    return
+                #else:
+                    #return
             #else:
                 #flows[unique_id] = Flow(fila['TotLen Bwd Pkts'],fila['Fwd Pkt Len Max'],fila['Fwd Pkt Len Min'],fila['Fwd Pkt Len Std'],fila['Bwd Pkt Len Min'],fila['Bwd Pkt Len Std'],fila['Flow Byts/s'],fila['Flow Pkts/s'],fila['Flow IAT Mean'],fila['Flow IAT Min'],fila['Fwd IAT Std'],fila['Bwd IAT Tot'],fila['Bwd IAT Std'],fila['Bwd IAT Max'],fila['Bwd Header Len'],fila['Pkt Len Max'],fila['Pkt Len Mean'],fila['Pkt Len Std'],fila['Pkt Len Var'],fila['Down Up Ratio'],fila['Fwd Seg Size Avg'],fila['Bwd Seg Size Avg'],fila['Init Bwd Win Byts'],fila['Active Min'],fila['Idle Std'],fila['Puerto Origen'],fila['Puerto Destino'],fila['IP Origen'],fila['IP Destino'],fila['Seno Hora'],fila['Coseno Hora'])
             #if unique_id in flows.keys():
@@ -188,6 +207,8 @@ class SimpleSwitch13(app_manager.RyuApp):
                 #else:
                     #flows[unique_id] = Flow(int(fields[0]), fields[1], fields[2], fields[3], fields[4], fields[5], int(fields[6]), int(fields[7])) #create new flow object
             #if time%10==0:
+            else:
+                return
             if unique_id == self.previo_id:
                 return
             #time += 1
@@ -248,7 +269,7 @@ class SimpleSwitch13(app_manager.RyuApp):
                     tcp_dst = pkt.get_protocol(tcp.tcp).dst_port
                     udp_src = 0
                     udp_dst = 0
-                    match = parser.OFPMatch(eth_type = 0x800, in_port=in_port, eth_dst=dst, eth_src=src, ipv4_dst=ipv4_dst, ipv4_src=ipv4_src, ip_proto=ip_proto)
+                    match = parser.OFPMatch(eth_type = 0x800, in_port=in_port, eth_dst=dst, eth_src=src, tcp_src=tcp_src, tcp_dst=tcp_dst, ipv4_dst=ipv4_dst, ipv4_src=ipv4_src, ip_proto=ip_proto)
                     #self.logger.info(match)
                     #self.logger.info('Match TCP')
                 elif ip_proto == in_proto.IPPROTO_UDP:
@@ -256,7 +277,7 @@ class SimpleSwitch13(app_manager.RyuApp):
                     udp_dst = pkt.get_protocol(udp.udp).dst_port
                     tcp_src = 0
                     tcp_dst = 0
-                    match = parser.OFPMatch(eth_type = 0x800, in_port=in_port, eth_dst=dst, eth_src=src, ipv4_dst=ipv4_dst, ipv4_src=ipv4_src, ip_proto=ip_proto)
+                    match = parser.OFPMatch(eth_type = 0x800, in_port=in_port, eth_dst=dst, eth_src=src, udp_src=udp_src, udp_dst=udp_dst, ipv4_dst=ipv4_dst, ipv4_src=ipv4_src, ip_proto=ip_proto)
                     #self.logger.info(match)
                 elif ip_proto == in_proto.IPPROTO_ICMP:
                     ip_proto = 0
@@ -267,7 +288,7 @@ class SimpleSwitch13(app_manager.RyuApp):
                     match = parser.OFPMatch(eth_type = 0x800, in_port=in_port, eth_dst=dst, eth_src=src, ipv4_dst=ipv4_dst, ipv4_src=ipv4_src, ip_proto=ip_proto)
                     #self.logger.info(match)
             #else:
-                #match = parser.OFPMatch(in_port=in_port, eth_dst=dst, eth_src=src, tcp_dst=0, tcp_src=0, udp_dst=0, udp_src=0, ipv4_dst=0, ipv4_src=0)
+                #match = parser.OFPMatch(in_port=in_port, eth_dst=dst, eth_src=src)
             #match = parser.OFPMatch(in_port=in_port, eth_dst=dst, eth_src=src, tcp_dst=tcp_dst, tcp_src=tcp_src, udp_dst=udp_dst, udp_src=udp_src, ipv4_dst=ipv4_dst, ipv4_src=ipv4_src, ip_proto=ip_proto)
             # verify if we have a valid buffer_id, if yes avoid to send both
             # flow_mod & packet_out
@@ -276,12 +297,15 @@ class SimpleSwitch13(app_manager.RyuApp):
                     #self.logger.info('PacketIn add flow 1')
                     return
                 else:
+                    print('papas')
                     self.add_flow(datapath, 1, match, actions)
                     #self.logger.info('PacketIn add flow 2')
 
                 if(self._run_ryu(datapath,tcp_src,tcp_dst,udp_src,udp_dst,ipv4_src,ipv4_dst,ip_proto)==1):
                     print('Ataque')
-                    #self.mod_flow(datapath,1,match,actions)
+                    self.mod_flow(datapath,1,match)
+                else:
+                    print('Normal')
 
         data = None
         if msg.buffer_id == ofproto.OFP_NO_BUFFER:
